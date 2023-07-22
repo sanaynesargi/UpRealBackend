@@ -399,6 +399,3 @@ def index():
     db.create_all()
     return "Server Home"
 
-
-if __name__ == '__main__':
-    app.run(debug=True, port="8000")
