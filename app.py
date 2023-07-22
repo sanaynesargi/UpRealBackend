@@ -381,11 +381,11 @@ def login():
         login_token = user.token
 
         resp.set_cookie("login_token", login_token, 31 * 24 *
-                        60 * 60, date.today() + relativedelta(months=+1), secure=True, httponly=True, samesite=None)
+                        60 * 60, date.today() + relativedelta(months=+1), secure=True, httponly=True, samesite="None")
         resp.set_cookie("email", user.email, 31 * 24 *
-                        60 * 60, date.today() + relativedelta(months=+1),  secure=True, httponly=True, samesite=None)
+                        60 * 60, date.today() + relativedelta(months=+1),  secure=True, httponly=True, samesite="None")
         resp.set_cookie("username", user.username, 31 * 24 *
-                        60 * 60, date.today() + relativedelta(months=+1),  secure=True, httponly=True, samesite=None)
+                        60 * 60, date.today() + relativedelta(months=+1),  secure=True, httponly=True, samesite="None")
 
         return resp
 
