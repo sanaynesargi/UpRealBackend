@@ -390,7 +390,7 @@ def login():
         return resp
 
     else:
-        return {"success": False, "error": "Invalid password"}
+        return {"success": False, "error": "Invalid Password"}
 
 
 @app.route("/")
