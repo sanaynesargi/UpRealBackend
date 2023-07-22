@@ -314,14 +314,14 @@ def signup():
     db.session.add(user)
     db.session.commit()
 
-    resp = make_response({"error": None, "success": True, "id": user.id})
+    resp = make_response({"error": None, "success": True, "id": user.id, "initals": user.firstname[0] + user.lastname[0]})
 
     resp.set_cookie("login_token", login_token, 31 * 24 *
-                    60 * 60, date.today() + relativedelta(months=+1), domain=".ondigitalocean.app")
+                    60 * 60, date.today() + relativedelta(months=+1), secure=True, samesite="None")
     resp.set_cookie("email", user.email, 31 * 24 *
-                    60 * 60, date.today() + relativedelta(months=+1), domain=".ondigitalocean.app")
+                    60 * 60, date.today() + relativedelta(months=+1), secure=True, samesite="None")
     resp.set_cookie("username", user.username, 31 * 24 *
-                    60 * 60, date.today() + relativedelta(months=+1), domain=".ondigitalocean.app")
+                    60 * 60, date.today() + relativedelta(months=+1), secure=True, samesite="None")
 
     return resp
 
@@ -377,15 +377,15 @@ def login():
     inp_pass_hash = hash(password, salt)
 
     if db_pass == inp_pass_hash:
-        resp = make_response({"success": True})
+        resp = make_response({"success": True, "initals": user.firstname[0] + user.lastname[0]})
         login_token = user.token
 
         resp.set_cookie("login_token", login_token, 31 * 24 *
-                        60 * 60, date.today() + relativedelta(months=+1), secure=True, samesite="None", domain="demo.upreal.us")
+                        60 * 60, date.today() + relativedelta(months=+1), secure=True, samesite="None")
         resp.set_cookie("email", user.email, 31 * 24 *
-                        60 * 60, date.today() + relativedelta(months=+1),  secure=True, samesite="None", domain="demo.upreal.us")
+                        60 * 60, date.today() + relativedelta(months=+1),  secure=True, samesite="None")
         resp.set_cookie("username", user.username, 31 * 24 *
-                        60 * 60, date.today() + relativedelta(months=+1),  secure=True, samesite="None", domain="demo.upreal.us")
+                        60 * 60, date.today() + relativedelta(months=+1),  secure=True, samesite="None")
 
         return resp
 
