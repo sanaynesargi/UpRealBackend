@@ -67,9 +67,15 @@ def get_school_data(latitude, longitude):
         print(f"Error occurred: {e}")
         return None
 
+# TODO: KEEPING AS TEMP FOR NOW
+
 
 def get_crime_rate(zip):
     url = "https://crime-data-by-zipcode-api.p.rapidapi.com/crime_data"
+
+    if os.path.exists("./crime_data.json"):
+        with open("./crime_data.json", "r") as d:
+            return json.load(d)
 
     querystring = {"zip": str(zip)}
 
@@ -79,6 +85,9 @@ def get_crime_rate(zip):
     }
 
     response = requests.get(url, headers=headers, params=querystring)
+
+    with open("./crime_data.json", "w") as d:
+        json.dump(response, d)
 
     return response.json()
 
