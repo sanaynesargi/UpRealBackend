@@ -1,5 +1,7 @@
 from flask import Flask, request, make_response
 from flask_cors import CORS, cross_origin
+from model_data import get_model_response
+from model_data import get_model_data
 from logged_in import logged_in
 from tables.User import User
 from db_manager import db
@@ -33,7 +35,7 @@ def get_user_info():
 
     token = logged_in(request.cookies)
 
-    if not logged_in:
+    if not token:
         return {"error": "Not Authorized"}
 
     user = User.query.filter_by(token=token).first()
@@ -172,108 +174,36 @@ def get_property_data_realtor():
     return listing_data
 
 
-@app.route('/property2', methods=['GET'])
-@cross_origin()
-def get_property_data_mash():
+@app.route("/propertyInfo", methods=['GET'])
+def get_property_scores():
 
-    # get property listings from MLS via Realtor
-    if not os.path.exists("cache_response.json"):
-        url = "https://realty-in-us.p.rapidapi.com/properties/v3/list"
+    token = logged_in(request.cookies)
 
-        payload = {
-            "limit": 200,
-            "offset": 0,
-            "postal_code": "75077",
-            "status": ["for_sale"],
-            "sort": {
-                "direction": "desc",
-                "field": "list_date"
-            }
-        }
-        headers = {
-            "content-type": "application/json",
-            "X-RapidAPI-Key": "b0939172dcmsh3c3cc8319112577p1e7f18jsncec3d909315d",
-            "X-RapidAPI-Host": "realty-in-us.p.rapidapi.com"
-        }
+    if not token:
+        return {"error": "Not Authorized"}
 
-        response = requests.post(url, json=payload, headers=headers)
-        response = response.json()
+    user = User.query.filter_by(token=token).first()
 
-        with open("cache_response.json", "w") as js:
-            json.dump(response, js)
-    else:
-        with open("cache_response.json", "r") as js:
-            response = json.load(js)
+    if not user:
+        return {"error": "Invalid Token"}
 
-    results = response["data"]["home_search"]["results"]
-    count = response["data"]["home_search"]["count"]
-    listing_data = {}
+    address1 = request.args.get("address1")
+    address2 = request.args.get("address2")
 
-    for result in results:
-        property_id = result["id"]
-        listing_data[property_id] = {}
+    if not address1 or not address2:
+        return {"error": "Invalid Request"}
 
-        advertising_info = result["agents"]
-        property_description = result["description"]
+    property_data = get_model_data(address1, address2)
 
-        listing_data[property_id]["seller_info"] = []
-        listing_data[property_id]["property_description"] = {}
-        listing_data[property_id]["current_estimate"] = None
-        listing_data[property_id]["listing_information"] = {}
-        listing_data[property_id]["location"] = {}
-        listing_data[property_id]["photo"] = None
-        listing_data[property_id]["virtual_tours"] = []
-        listing_data[property_id]["mls_listing"] = result["url"]
+    if not property_data:
+        return {"error": "Error fetching property data"}
 
-        # if not advertising_info:
-        #     continue
+    scores = get_model_response(property_data)
 
-        for advertiser in advertising_info:
-            listing_data[property_id]["seller_info"].append({
-                "id": advertiser["id"],
+    if not scores:
+        return {"error": "Error making request to GCP"}
 
-            })
-
-        listing_data[property_id]["property_description"] = {
-            "baths": result["baths"],
-            "beds": result["beds"],
-            "type": result["homeType"] + " " + result["propertyType"],
-            "lot_sqft": property_description["lot_sqft"],
-            "prop_sqft": property_description["sqft"],
-        }
-
-        if result["listPrice"]:
-            listing_data[property_id]["current_estimate"] = result["listPrice"]
-
-        listing_data[property_id]["listing_information"] = {
-            "list_date": result["listing_date"],
-            "list_price": result["listPrice"],
-            "last_sold": result["lastSaleDate"],
-            "last_sold_price": result["lastSalePrice"],
-        }
-
-        listing_data[property_id]["location"] = {
-            "city": result["city"],
-            "zip_code": result["zip"],
-            "state": result["state"],
-            "state_code": result["state"],
-            "line": result["address"],
-        }
-
-        listing_data[property_id]["location"]["coordinates"] = {
-            "lat": result["latitude"],
-            "lon": result["longitude"],
-        }
-
-        if result["image"]:
-            listing_data[property_id]["photo"] = result["image"]["url"]
-
-        if result["virtual_tours"]:
-            listing_data[property_id]["virtual_tours"] = [
-                tour for tour in result["virtual_tours"]
-            ]
-
-    return listing_data
+    return scores
 
 
 @app.route("/signup", methods=["POST"])
@@ -314,7 +244,8 @@ def signup():
     db.session.add(user)
     db.session.commit()
 
-    resp = make_response({"error": None, "success": True, "id": user.id, "initals": user.firstname[0] + user.lastname[0]})
+    resp = make_response({"error": None, "success": True, "id": user.id,
+                         "initals": user.firstname[0] + user.lastname[0]})
 
     resp.set_cookie("login_token", login_token, 31 * 24 *
                     60 * 60, date.today() + relativedelta(months=+1), secure=True, samesite="None")
@@ -377,7 +308,8 @@ def login():
     inp_pass_hash = hash(password, salt)
 
     if db_pass == inp_pass_hash:
-        resp = make_response({"success": True, "initals": user.firstname[0] + user.lastname[0]})
+        resp = make_response(
+            {"success": True, "initals": user.firstname[0] + user.lastname[0]})
         login_token = user.token
 
         resp.set_cookie("login_token", login_token, 31 * 24 *
@@ -398,4 +330,3 @@ def login():
 def index():
     db.create_all()
     return "Server Home"
-
