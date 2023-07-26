@@ -179,15 +179,15 @@ def get_property_data_realtor():
 @cross_origin(supports_credentials=True)
 def get_property_scores():
 
-    token = logged_in(request.cookies)
+    # token = logged_in(request.cookies)
 
-    if not token:
-        return {"error": "Not Authorized"}
+    # if not token:
+    #     return {"error": "Not Authorized"}
 
-    user = User.query.filter_by(token=token).first()
+    # user = User.query.filter_by(token=token).first()
 
-    if not user:
-        return {"error": "Invalid Token"}
+    # if not user:
+    #     return {"error": "Invalid Token"}
 
     address1 = request.args.get("address1")
     address2 = request.args.get("address2")

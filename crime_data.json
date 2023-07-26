@@ -1,0 +1,174 @@
+{
+  "Overall": {
+    "Zipcode": "80212",
+    "Overall Crime Grade": "C",
+    "Violent Crime Grade": "C+",
+    "Property Crime Grade": "C",
+    "Other Crime Grade": "C-",
+    "Fact": "A crime occurs every 14 hours 48 minutes (on average) in 80212.",
+    "Risk": "300%",
+    "Risk Detail": "Your home is 300% more likely to be robbed with no home security system."
+  },
+  "Crime BreakDown": [
+    {
+      "Violent Crime Rates": {
+        "Assault": "1.425",
+        "Robbery": "0.4264",
+        "Rape": "0.7415",
+        "Murder": "0.0232"
+      },
+      "0": {
+        "Total Violent Crime": "2.617",
+        "Total Violent Crime Score": "(C+)"
+      }
+    },
+    {
+      "Property Crime Rates": {
+        "Theft": "5.478",
+        "Vehicle Theft": "5.377",
+        "Burglary": "3.802",
+        "Arson": "0.0849"
+      },
+      "0": {
+        "Total Property Crime": "14.74",
+        "Total Property Crime Score": "(C)"
+      }
+    },
+    {
+      "Other Crime Rates": {
+        "Kidnapping": "0.0400",
+        "Drug Crimes": "6.375",
+        "Vandalism": "5.139",
+        "Identity Theft": "1.193",
+        "Animal Cruelty": "0.0088"
+      },
+      "0": { "Total Other Rate": "12.76", "Total Other Score": "(C-)" }
+    }
+  ],
+  "Crime Rates Nearby": [
+    {
+      "Nearby Zip": "80211, CO",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Nearby Zip": "80214, CO",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Nearby Zip": "80033, CO",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Nearby Zip": "80204, CO",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Nearby Zip": "80002, CO",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Nearby Zip": "80202, CO",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Nearby Zip": "80294, CO",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Nearby Zip": "80293, CO",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Nearby Zip": "80290, CO",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Nearby Zip": "80264, CO",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    }
+  ],
+  "Similar Population Crime Rates": [
+    {
+      "Similar Zip": "17225, PA",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Similar Zip": "44709, OH",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Similar Zip": "77303, TX",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Similar Zip": "02536, MA",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Similar Zip": "94022, CA",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Similar Zip": "71055, LA",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Similar Zip": "82501, WY",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Similar Zip": "79407, TX",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Similar Zip": "34473, FL",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    },
+    {
+      "Similar Zip": "29016, SC",
+      "Overall Crime Grade": "C",
+      "Violent Crime Grade": "C+",
+      "Property Crime Grade": "C"
+    }
+  ],
+  "success": true,
+  "status code": 200
+}

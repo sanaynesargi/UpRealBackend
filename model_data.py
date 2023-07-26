@@ -87,7 +87,7 @@ def get_crime_rate(zip):
     response = requests.get(url, headers=headers, params=querystring)
 
     with open("./crime_data.json", "w") as d:
-        json.dump(response, d)
+        json.dump(response.json(), d)
 
     return response.json()
 
@@ -313,7 +313,7 @@ def get_model_data(address1, address2):
         }
 
         return ", ".join(iterdict(kept_data, []))
-    except Exception:
+    except Exception as e:
         return None
 
 
