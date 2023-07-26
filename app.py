@@ -30,6 +30,7 @@ db.init_app(app)
 
 
 @app.route("/getUserInfo", methods=['GET'])
+@cross_origin()
 @cross_origin(supports_credentials=True)
 def get_user_info():
 
@@ -175,6 +176,7 @@ def get_property_data_realtor():
 
 
 @app.route("/propertyInfo", methods=['GET'])
+@cross_origin(supports_credentials=True)
 def get_property_scores():
 
     token = logged_in(request.cookies)
