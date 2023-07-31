@@ -4,6 +4,8 @@ from model_data import get_model_response
 from model_data import get_model_data
 from logged_in import logged_in
 from tables.User import User
+from tables.profiles.FixFlipProfile import FixFlipProfile
+from tables.profiles.RentProfile import RentProfile
 from db_manager import db
 from pyargon2 import hash
 from bcrypt import gensalt
@@ -70,7 +72,7 @@ def get_property_data_realtor():
         payload = {
             "limit": 200,
             "offset": 0,
-            "postal_code": "75077" # zip,
+            "postal_code": "75077",  # zip,
             "status": ["for_sale"],
             "sort": {
                 "direction": "desc",
@@ -245,7 +247,7 @@ def signup():
         return {"error": "Email Taken, if this is you, then log in"}
 
     user = User(firstname=firstname, lastname=lastname, username=username,
-                company=company, email=email, password=passwd_hash, salt=passwd_salt, token=login_token)
+                company=company, email=email, password=passwd_hash, salt=passwd_salt, token=login_token, profile_ids="")
 
     db.session.add(user)
     db.session.commit()
@@ -331,8 +333,386 @@ def login():
         return {"success": False, "error": "Invalid Password"}
 
 
+@app.route("/setProfile", methods=["POST"])
+@cross_origin()
+def set_profile():
+    token = logged_in(request.cookies)
+
+    if not token:
+        return {"error": "Not Authorized"}
+
+    user = User.query.filter_by(token=token).first()
+
+    if not user:
+        return {"error": "Invalid Token"}
+
+    form = request.form
+
+    if not request.form.get("profile_type"):
+        return {"error": "Invalid Request"}
+
+    if form["profile_type"] == "Rental":
+        name = request.form.get("name")
+        location = request.form.get("location")
+        risk = request.form.get("risk")
+        budget_high = request.form.get("budgetHigh")
+        budget_low = request.form.get("budgetLow")
+        appreciation_high = request.form.get("appHigh")
+        appreciation_low = request.form.get("appLow")
+        cashflow_high = request.form.get("cashflowHigh")
+        cashflow_low = request.form.get("cashflowLow")
+        coc_high = request.form.get("cocHigh")
+        coc_low = request.form.get("cocLow")
+        main_high = request.form.get("mainHigh")
+        main_low = request.form.get("mainLow")
+        hold_high = request.form.get("holdHigh")
+        hold_low = request.form.get("holdLow")
+
+        if not hold_high or not hold_low or not name or not location or not risk or not budget_high or not budget_low or not appreciation_high or not appreciation_low or not cashflow_high or not cashflow_low or not coc_high or not coc_low or not main_high or not main_low:
+            return {"error": "Invalid Request"}
+
+        profile = RentProfile(name=name, location=location, risk=risk, budget_high=budget_high, budget_low=budget_low, appreciation_high=appreciation_high,
+                              appreciation_low=appreciation_low, cashflow_high=cashflow_high, cashflow_low=cashflow_low, coc_high=coc_high, coc_low=coc_low,
+                              main_high=main_high, main_low=main_low, hold_low=hold_low, hold_high=hold_high)
+        db.session.add(profile)
+        db.session.commit()
+
+        if len(user.profile_ids) == 0:
+            user.profile_ids = f"R{profile.id}"
+        else:
+            split_ids = user.profile_ids.split("|")
+
+            if len(split_ids) == 20:
+                return {"error": "Max profiles reached"}
+
+            new_ids = f"{user.profile_ids}|R{profile.id}"
+            user.profile_ids = new_ids
+
+        db.session.add(user)
+        db.session.commit()
+
+        return {"success": True}
+
+    elif form["profile_type"] == "Fix and Flip":
+        name = request.form.get("name")
+        location = request.form.get("location")
+        risk = request.form.get("risk")
+        budget_high = request.form.get("budgetHigh")
+        budget_low = request.form.get("budgetLow")
+        after_repair_high = request.form.get("afterRepairHigh")
+        after_repair_low = request.form.get("afterRepairLow")
+        repair_cost_high = request.form.get("repairCostHigh")
+        repair_cost_low = request.form.get("repairCostLow")
+        coc_high = request.form.get("cocHigh")
+        coc_low = request.form.get("cocLow")
+
+        if not name or not location or not risk or not budget_high or not budget_low or not after_repair_high or not after_repair_low or not repair_cost_high or not repair_cost_low or not coc_high or not coc_low:
+            return {"error": "Invalid Request"}
+
+        profile = FixFlipProfile(name=name, location=location, risk=risk,
+                                 budget_high=budget_high, budget_low=budget_low, after_repair_high=after_repair_high, after_repair_low=after_repair_low, repair_cost_high=repair_cost_high, repair_cost_low=repair_cost_low, coc_high=coc_high, coc_low=coc_low)
+        db.session.add(profile)
+        db.session.commit()
+
+        user.profile_ids = ""
+        db.session.add(user)
+        db.session.commit()
+
+        if len(user.profile_ids) == 0:
+            user.profile_ids = f"F{profile.id}"
+        else:
+            split_ids = user.profile_ids.split("|")
+
+            if len(split_ids) == 20:
+                return {"error": "Max profiles reached"}
+
+            new_ids = f"{user.profile_ids}|F{profile.id}"
+            user.profile_ids = new_ids
+
+        db.session.add(user)
+        db.session.commit()
+
+        return {"success": True}
+
+
+@app.route("/getProfileList", methods=["GET"])
+@cross_origin()
+def get_profile_list():
+    token = logged_in(request.cookies)
+
+    if not token:
+        return {"error": "Not Authorized"}
+
+    user = User.query.filter_by(token=token).first()
+
+    if not user:
+        return {"error": "Invalid Token"}
+
+    if user.profile_ids == "":
+        return {"error": "No Profiles Found"}
+
+    split_profiles = user.profile_ids.split("|")
+
+    json_data = []
+
+    for type, id in split_profiles:
+        if type == "R":
+            profile = RentProfile.query.filter_by(id=id).first()
+
+            entry = {
+                "profile_type": {
+                    "title": "Profile Type",
+                    "value": "Rental"
+                },
+                "profile_name": {
+                    "title": "Profile Name",
+                    "value": profile.name,
+                },
+                "creation_date": {
+                    "title": "Created On",
+                    "value": profile.created_at.strftime("%B %d, %Y"),
+                },
+                "metro_location": {
+                    "title": "Metro Location",
+                    "value": profile.location,
+                },
+                "risk_appetite": {
+                    "title": "Risk Appetite",
+                    "value": profile.risk,
+                },
+                "purchase_budget": {
+                    "title": "Purchase Budget",
+                    "value_low": profile.budget_low,
+                    "value_high": profile.budget_high,
+                    "currency": "USD",
+                },
+                "appreciation_target": {
+                    "title": "Target Appreciation for Sale",
+                    "value_low": profile.appreciation_low,
+                    "value_high": profile.appreciation_high,
+                    "currency": "USD",
+                },
+                "hold_period": {
+                    "title": "Hold Period",
+                    "value_low": profile.hold_low,
+                    "value_high": profile.hold_high,
+                    "time_unit": "years"
+                },
+                "cash_flow_target": {
+                    "title": "Target Cash Flow",
+                    "value_low": profile.cashflow_low,
+                    "value_high": profile.cashflow_high,
+                    "time_unit": "Monthly"
+                },
+                "cash_on_cash_target": {
+                    "title": "Cash-on-Cash Target",
+                    "value_low": profile.coc_low,
+                    "value_high": profile.coc_high,
+                    "time_unit": "Years",
+                },
+                "maintenance_spend": {
+                    "title": "Maintenance Spend",
+                    "value_low": profile.main_low,
+                    "value_high": profile.main_high,
+                    "time_unit": "Annual",
+                }
+            }
+
+        elif type == "F":
+            profile = FixFlipProfile.query.filter_by(id=id).first()
+
+            entry = {
+                "profile_type": {
+                    "title": "Profile Type",
+                    "value": "Rental"
+                },
+                "profile_name": {
+                    "title": "Profile Name",
+                    "value": profile.name,
+                },
+                "creation_date": {
+                    "title": "Created On",
+                    "value": profile.created_at.strftime("%B %d, %Y"),
+                },
+                "metro_location": {
+                    "title": "Metro Location",
+                    "value": profile.location,
+                },
+                "risk_appetite": {
+                    "title": "Risk Appetite",
+                    "value": profile.risk,
+                },
+                "purchase_budget": {
+                    "title": "Purchase Budget",
+                    "value_low": profile.budget_low,
+                    "value_high": profile.budget_high,
+                    "currency": "USD",
+                },
+                "after_repair_value_target": {
+                    "title": "After Repair Value Target",
+                    "value_low": profile.after_repair_low,
+                    "value_high": profile.after_repair_high,
+                    "currency": "USD"
+                },
+                "repair_costs_target": {
+                    "title": "Target Repair Costs",
+                    "value_low": profile.repair_cost_low,
+                    "value_high": profile.repair_cost_high,
+                    "unit": "Percent",
+                },
+                "cash_on_cash_target": {
+                    "title": "Cash-on-Cash Target",
+                    "value_low": profile.coc_low,
+                    "value_high": profile.coc_high,
+                    "time_unit": "Years",
+                },
+            }
+        json_data.append(entry)
+
+    return {"profiles": json_data}
+
+
+@app.route("/getProfile", methods=["GET"])
+@cross_origin()
+def get_profile():
+    token = logged_in(request.cookies)
+
+    if not token:
+        return {"error": "Not Authorized"}
+
+    user = User.query.filter_by(token=token).first()
+
+    if not user:
+        return {"error": "Invalid Token"}
+
+    name = request.args.get("name")
+
+    if user.profile_ids == "":
+        return {"error": "No Profiles Found"}
+
+    split_profiles = user.profile_ids.split("|")
+
+    print(split_profiles)
+
+    for type, id in split_profiles:
+        if type == "F":
+            profile = RentProfile.query.filter_by(id=id).first()
+            if profile.name == name:
+                return {"profile": {
+                    "profile_type": {
+                        "title": "Profile Type",
+                        "value": "Rental"
+                    },
+                    "profile_name": {
+                        "title": "Profile Name",
+                        "value": profile.name,
+                    },
+                    "creation_date": {
+                        "title": "Created On",
+                        "value": profile.created_at.strftime("%B %d, %Y"),
+                    },
+                    "metro_location": {
+                        "title": "Metro Location",
+                        "value": profile.location,
+                    },
+                    "risk_appetite": {
+                        "title": "Risk Appetite",
+                        "value": profile.risk,
+                    },
+                    "purchase_budget": {
+                        "title": "Purchase Budget",
+                        "value_low": profile.budget_low,
+                        "value_high": profile.budget_high,
+                        "currency": "USD",
+                    },
+                    "appreciation_target": {
+                        "title": "Target Appreciation for Sale",
+                        "value_low": profile.appreciation_low,
+                        "value_high": profile.appreciation_high,
+                        "currency": "USD",
+                    },
+                    "hold_period": {
+                        "title": "Hold Period",
+                        "value_low": profile.hold_low,
+                        "value_high": profile.hold_high,
+                        "time_unit": "years"
+                    },
+                    "cash_flow_target": {
+                        "title": "Target Cash Flow",
+                        "value_low": profile.cashflow_low,
+                        "value_high": profile.cashflow_high,
+                        "time_unit": "Monthly"
+                    },
+                    "cash_on_cash_target": {
+                        "title": "Cash-on-Cash Target",
+                        "value_low": profile.coc_low,
+                        "value_high": profile.coc_high,
+                        "time_unit": "Years",
+                    },
+                    "maintenance_spend": {
+                        "title": "Maintenance Spend",
+                        "value_low": profile.main_low,
+                        "value_high": profile.main_high,
+                        "time_unit": "Annual",
+                    }
+                }}
+        elif type == "F":
+            profile = FixFlipProfile.query.filter_by(id=id).first()
+            if profile.name == name:
+                return {"profile": {
+                    "profile_type": {
+                        "title": "Profile Type",
+                        "value": "Rental"
+                    },
+                    "profile_name": {
+                        "title": "Profile Name",
+                        "value": profile.name,
+                    },
+                    "creation_date": {
+                        "title": "Created On",
+                        "value": profile.created_at.strftime("%B %d, %Y"),
+                    },
+                    "metro_location": {
+                        "title": "Metro Location",
+                        "value": profile.location,
+                    },
+                    "risk_appetite": {
+                        "title": "Risk Appetite",
+                        "value": profile.risk,
+                    },
+                    "purchase_budget": {
+                        "title": "Purchase Budget",
+                        "value_low": profile.budget_low,
+                        "value_high": profile.budget_high,
+                        "currency": "USD",
+                    },
+                    "after_repair_value_target": {
+                        "title": "After Repair Value Target",
+                        "value_low": profile.after_repair_low,
+                        "value_high": profile.after_repair_high,
+                        "currency": "USD"
+                    },
+                    "repair_costs_target": {
+                        "title": "Target Repair Costs",
+                        "value_low": profile.repair_cost_low,
+                        "value_high": profile.repair_cost_high,
+                        "unit": "Percent",
+                    },
+                    "cash_on_cash_target": {
+                        "title": "Cash-on-Cash Target",
+                        "value_low": profile.coc_low,
+                        "value_high": profile.coc_high,
+                        "time_unit": "Years",
+                    },
+                }}
+
+    return {"error": "No Matching Profiles Found"}
+
+
 @app.route("/")
 @cross_origin()
 def index():
+    db.drop_all()
     db.create_all()
+
     return "Server Home"

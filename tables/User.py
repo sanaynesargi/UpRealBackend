@@ -9,9 +9,10 @@ class User(db.Model):
     username = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     company = db.Column(db.String(80), nullable=True)
-    password = db.Column(db.String(80),  nullable=False)
+    password = db.Column(db.String(80), nullable=False)
     salt = db.Column(db.String(80),  nullable=False)
     token = db.Column(db.String(80),  nullable=False)
+    profile_ids = db.Column(db.String(80),  nullable=False)
     created_at = db.Column(db.DateTime(timezone=True),
                            server_default=func.now())
 
