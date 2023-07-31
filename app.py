@@ -58,6 +58,11 @@ def get_user_info():
 @cross_origin()
 def get_property_data_realtor():
 
+    zip = request.args.get("zip_code")
+
+    # if not zip:
+    #     return {"error": "Invalid Request"}
+
     # get property listings from MLS via Realtor
     if not os.path.exists("cache_response.json"):
         url = "https://realty-in-us.p.rapidapi.com/properties/v3/list"
@@ -65,7 +70,7 @@ def get_property_data_realtor():
         payload = {
             "limit": 200,
             "offset": 0,
-            "postal_code": "75077",
+            "postal_code": "75077" # zip,
             "status": ["for_sale"],
             "sort": {
                 "direction": "desc",
@@ -178,16 +183,15 @@ def get_property_data_realtor():
 @app.route("/propertyInfo", methods=['GET'])
 @cross_origin(supports_credentials=True)
 def get_property_scores():
+    token = logged_in(request.cookies)
 
-    # token = logged_in(request.cookies)
+    if not token:
+        return {"error": "Not Authorized"}
 
-    # if not token:
-    #     return {"error": "Not Authorized"}
+    user = User.query.filter_by(token=token).first()
 
-    # user = User.query.filter_by(token=token).first()
-
-    # if not user:
-    #     return {"error": "Invalid Token"}
+    if not user:
+        return {"error": "Invalid Token"}
 
     address1 = request.args.get("address1")
     address2 = request.args.get("address2")
