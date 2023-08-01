@@ -19,6 +19,7 @@ class RentProfile(db.Model):
     main_low = db.Column(db.Float,  nullable=False)
     hold_high = db.Column(db.Integer,  nullable=False)
     hold_low = db.Column(db.Integer,  nullable=False)
+    deleted = db.Column(db.Boolean,  nullable=True)
     created_at = db.Column(db.DateTime(timezone=True),
                            server_default=func.now())
 

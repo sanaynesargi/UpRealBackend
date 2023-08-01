@@ -459,6 +459,9 @@ def get_profile_list():
         if type == "R":
             profile = RentProfile.query.filter_by(id=id).first()
 
+            if profile.deleted:
+                continue
+
             entry = {
                 "profile_type": {
                     "title": "Profile Type",
@@ -508,7 +511,8 @@ def get_profile_list():
                     "title": "Cash-on-Cash Target",
                     "value_low": profile.coc_low,
                     "value_high": profile.coc_high,
-                    "time_unit": "Years",
+                    "unit": "Percent",
+                    "time_unit": "Annual",
                 },
                 "maintenance_spend": {
                     "title": "Maintenance Spend",
@@ -520,6 +524,9 @@ def get_profile_list():
 
         elif type == "F":
             profile = FixFlipProfile.query.filter_by(id=id).first()
+
+            if profile.deleted:
+                continue
 
             entry = {
                 "profile_type": {
@@ -564,7 +571,8 @@ def get_profile_list():
                     "title": "Cash-on-Cash Target",
                     "value_low": profile.coc_low,
                     "value_high": profile.coc_high,
-                    "time_unit": "Years",
+                    "unit": "Percent",
+                    "time_unit": "Annual",
                 },
             }
         json_data.append(entry)
@@ -592,11 +600,11 @@ def get_profile():
 
     split_profiles = user.profile_ids.split("|")
 
-    print(split_profiles)
-
     for type, id in split_profiles:
         if type == "F":
             profile = RentProfile.query.filter_by(id=id).first()
+            if profile.deleted:
+                continue
             if profile.name == name:
                 return {"profile": {
                     "profile_type": {
@@ -647,7 +655,8 @@ def get_profile():
                         "title": "Cash-on-Cash Target",
                         "value_low": profile.coc_low,
                         "value_high": profile.coc_high,
-                        "time_unit": "Years",
+                        "unit": "Percent",
+                        "time_unit": "Annual",
                     },
                     "maintenance_spend": {
                         "title": "Maintenance Spend",
@@ -658,6 +667,8 @@ def get_profile():
                 }}
         elif type == "F":
             profile = FixFlipProfile.query.filter_by(id=id).first()
+            if profile.deleted:
+                continue
             if profile.name == name:
                 return {"profile": {
                     "profile_type": {
@@ -702,9 +713,58 @@ def get_profile():
                         "title": "Cash-on-Cash Target",
                         "value_low": profile.coc_low,
                         "value_high": profile.coc_high,
-                        "time_unit": "Years",
+                        "unit": "Percent",
+                        "time_unit": "Annual",
                     },
                 }}
+
+    return {"error": "No Matching Profiles Found"}
+
+
+@app.route("/deleteProfile", methods=["GET"])
+@cross_origin()
+def delete_profile():
+    token = logged_in(request.cookies)
+
+    if not token:
+        return {"error": "Not Authorized"}
+
+    user = User.query.filter_by(token=token).first()
+
+    if not user:
+        return {"error": "Invalid Token"}
+
+    name = request.args.get("name")
+
+    split_profiles = user.profile_ids.split("|")
+
+    for type, id in split_profiles:
+
+        if type == "F":
+            profile = RentProfile.query.filter_by(id=id).first()
+
+            if profile.name != name:
+                continue
+
+            profile.deleted = True
+
+            db.session.add(profile)
+            db.session.commit()
+
+            return {"success": True, "deleted": profile.deleted}
+
+        elif type == "F":
+            profile = FixFlipProfile.query.filter_by(id=id).first()
+
+            if profile.name != name:
+                continue
+
+            profile.deleted = True
+
+            db.session.add(profile)
+            db.session.commit()
+
+            return {"success": True, "deleted": profile.deleted}
 
     return {"error": "No Matching Profiles Found"}
 

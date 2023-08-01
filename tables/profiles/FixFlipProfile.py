@@ -15,6 +15,7 @@ class FixFlipProfile(db.Model):
     repair_cost_low = db.Column(db.Float,  nullable=False)
     coc_high = db.Column(db.Float,  nullable=False)
     coc_low = db.Column(db.Float,  nullable=False)
+    deleted = db.Column(db.Boolean,  nullable=True)
     created_at = db.Column(db.DateTime(timezone=True),
                            server_default=func.now())
 
