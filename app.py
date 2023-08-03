@@ -772,7 +772,7 @@ def delete_profile():
 @app.route("/")
 @cross_origin()
 def index():
-    db.drop_all()
-    db.create_all()
+    # db.drop_all()
+    # db.create_all()
 
     return "Server Home"
