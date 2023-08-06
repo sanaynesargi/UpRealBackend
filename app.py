@@ -1,6 +1,6 @@
 from flask import Flask, request, make_response
 from flask_cors import CORS, cross_origin
-from upreal-backend.tables.LikedProperties import LikedProperties
+from tables.LikedProperties import LikedProperties
 from model_data import get_model_response
 from model_data import get_model_data
 from logged_in import logged_in
@@ -319,7 +319,7 @@ def login():
     if db_pass == inp_pass_hash:
         resp = make_response(
             {"success": True, "initals": user.firstname[0] + user.lastname[0]}, "fullName", f"{user.firstname} {user.lastname}")
-        
+
         login_token = user.token
 
         resp.set_cookie("login_token", login_token, 31 * 24 *
@@ -826,7 +826,7 @@ def setLike():
 
     if not prop_id:
         return {"error": "Invalid Request"}
-    
+
     property = LikedProperties(user_id=user.id, prop_id=prop_id)
 
     db.session.add(property)
@@ -834,7 +834,6 @@ def setLike():
 
     return {"success": True, "id": property.id}
 
-    
 
 @app.route("/")
 @cross_origin()
