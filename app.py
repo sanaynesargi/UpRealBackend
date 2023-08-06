@@ -319,6 +319,7 @@ def login():
     if db_pass == inp_pass_hash:
         resp = make_response(
             {"success": True, "initals": user.firstname[0] + user.lastname[0]}, "fullName", f"{user.firstname} {user.lastname}")
+        resp.headers.add('Access-Control-Allow-Origin', '*')
 
         login_token = user.token
 
