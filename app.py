@@ -1,6 +1,6 @@
 from flask import Flask, request, make_response
 from flask_cors import CORS, cross_origin
-from tables.LikedProperties import LikedProperties
+from tables.LikedProperties import LikedPropertiesv2 as LikedProperties
 from model_data import get_model_response
 from model_data import get_model_data
 from logged_in import logged_in
@@ -809,7 +809,7 @@ def delete_profile():
     return {"error": "No Matching Profiles Found"}
 
 
-@app.route("/setLike", methods=["GET"])
+@app.route("/setLike", methods=["POST"])
 @cross_origin(supports_credentials=True)
 def setLike():
     token = logged_in(request.cookies)
@@ -822,12 +822,21 @@ def setLike():
     if not user:
         return {"error": "Invalid Token"}
 
-    prop_id = request.args.get("propId")
+    prop_id = request.form.get("propId")
+    imageUrl = request.form.get("imageUrl")
+    beds = request.form.get("beds")
+    baths = request.form.get("baths")
+    title = request.form.get("title")
+    formattedPrice = request.form.get("formattedPrice")
+    type = request.form.get("type")
+    apiInfo = request.form.get("apiInfo")
+    city = request.form.get("city")
 
-    if not prop_id:
+    if not prop_id or not imageUrl or not beds or not baths or not title or not formattedPrice or not type or not apiInfo or not city:
         return {"error": "Invalid Request"}
 
-    property = LikedProperties(user_id=user.id, prop_id=prop_id)
+    property = LikedProperties(user_id=user.id, prop_id=prop_id, imageUrl=imageUrl,
+                               beds=beds, baths=baths, title=title, type=type, apiInfo=apiInfo, city=city)
 
     db.session.add(property)
     db.session.commit()
@@ -838,7 +847,7 @@ def setLike():
 @app.route("/")
 @cross_origin()
 def index():
-    # db.drop_all()
-    # db.create_all()
+    db.drop_all()
+    db.create_all()
 
     return "Server Home"
