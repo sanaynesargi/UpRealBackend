@@ -839,7 +839,9 @@ def setLike():
         title=title).first() is not None
 
     if existing_prop:
-        db.session.remove(existing_prop)
+        db.session.delete(existing_prop)
+        db.session.commit()
+
         return {"success": True}
 
     property = LikedProperties(user_id=user.id, prop_id=prop_id, imageUrl=imageUrl,
