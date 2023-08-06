@@ -844,10 +844,30 @@ def setLike():
     return {"success": True, "id": property.id}
 
 
+@app.route("/getLikedProperties", methods=["GET"])
+@cross_origin(supports_credentials=True)
+def getLikes():
+    token = logged_in(request.cookies)
+
+    if not token:
+        return {"error": "Not Authorized"}
+
+    user = User.query.filter_by(token=token).first()
+
+    if not user:
+        return {"error": "Invalid Token"}
+
+    props = LikedProperties.query.filter_by(user_id=user.id)
+
+    print(props)
+
+    return {"props": props}
+
+
 @app.route("/")
 @cross_origin()
 def index():
-    db.drop_all()
-    db.create_all()
+    # db.drop_all()
+    # db.create_all()
 
     return "Server Home"
