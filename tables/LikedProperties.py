@@ -12,7 +12,7 @@ class LikedPropertiesv2(db.Model):
     title = db.Column(db.String(100), nullable=False)
     formattedPrice = db.Column(db.String(100), nullable=False)
     type = db.Column(db.String(100), nullable=False)
-    apiInfo = db.Column(db.String(500), nullable=False)
+    apiInfo = db.Column(db.String(2000), nullable=False)
     city = db.Column(db.String(100), nullable=False)
 
     created_at = db.Column(db.DateTime(timezone=True),

@@ -836,7 +836,7 @@ def setLike():
         return {"error": "Invalid Request"}
 
     property = LikedProperties(user_id=user.id, prop_id=prop_id, imageUrl=imageUrl,
-                               beds=beds, baths=baths, title=title, type=type, apiInfo=apiInfo, city=city)
+                               beds=beds, baths=baths, title=title, type=type, apiInfo=apiInfo, city=city, formattedPrice=formattedPrice)
 
     db.session.add(property)
     db.session.commit()
