@@ -871,6 +871,7 @@ def getLikes():
             "type":  prop.type,
             "apiInfo":  prop.apiInfo,
             "city": prop.city,
+            "propId": prop.prop_id,
         })
 
     return {"props": prop_info}
