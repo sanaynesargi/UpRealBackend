@@ -857,11 +857,24 @@ def getLikes():
     if not user:
         return {"error": "Invalid Token"}
 
-    props = LikedProperties.query.filter_by(user_id=user.id)
+    props = LikedProperties.query.filter_by(user_id=user.id).all()
 
-    print(props)
+    prop_info = []
 
-    return {"props": props}
+    for prop in props:
+        prop = LikedProperties()
+        prop_info.append({
+            "imageUrl": prop.imageUrl,
+            "beds":  prop.beds,
+            "baths": prop.baths,
+            "title": prop.title,
+            "formattedPrice": prop.formattedPrice,
+            "type":  prop.type,
+            "apiInfo":  prop.apiInfo,
+            "city": prop.city,
+        })
+
+    return {"props": prop_info}
 
 
 @app.route("/")
