@@ -862,7 +862,6 @@ def getLikes():
     prop_info = []
 
     for prop in props:
-        prop = LikedProperties()
         prop_info.append({
             "imageUrl": prop.imageUrl,
             "beds":  prop.beds,
