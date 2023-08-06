@@ -288,7 +288,6 @@ def verifyLogin():
 
 
 @app.route("/login", methods=["POST"])
-@cross_origin(supports_credentials=True)
 def login():
 
     form_data = request.form
