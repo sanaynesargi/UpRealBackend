@@ -836,9 +836,9 @@ def setLike():
         return {"error": "Invalid Request"}
 
     existing_prop = LikedProperties.query.filter_by(
-        title=title).first() is not None
+        title=title).first()
 
-    if existing_prop:
+    if existing_prop is not None:
         db.session.delete(existing_prop)
         db.session.commit()
 
