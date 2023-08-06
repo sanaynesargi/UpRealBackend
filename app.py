@@ -18,7 +18,7 @@ from dateutil.relativedelta import relativedelta
 
 
 app = Flask(__name__)
-cors = CORS(app, origins=["http://localhost:5000"])
+cors = CORS(app, origins=["https://seashell-app-dxi4j.ondigitalocean.app"])
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:WeCry4U2@upreal-db.c1kuejyqkvci.us-west-2.rds.amazonaws.com:5432/postgres"
@@ -838,7 +838,7 @@ def setLike():
 @app.route("/")
 @cross_origin()
 def index():
-    db.drop_all()
-    db.create_all()
+    # db.drop_all()
+    # db.create_all()
 
     return "Server Home"
