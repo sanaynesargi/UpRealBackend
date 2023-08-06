@@ -254,7 +254,7 @@ def signup():
     db.session.commit()
 
     resp = make_response({"error": None, "success": True, "id": user.id,
-                         "initals": user.firstname[0] + user.lastname[0]})
+                         "initals": user.firstname[0] + user.lastname[0]}, "fullName": f"{user.firstname} {user.lastname}")
 
     resp.set_cookie("login_token", login_token, 31 * 24 *
                     60 * 60, date.today() + relativedelta(months=+1), secure=True, samesite="None")
