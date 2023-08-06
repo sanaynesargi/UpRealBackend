@@ -582,7 +582,7 @@ def get_profile_list():
 
 @app.route("/getProfileNames", methods=["GET"])
 @cross_origin()
-def get_profile_list():
+def get_profile_names():
     token = logged_in(request.cookies)
 
     if not token:
