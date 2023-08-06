@@ -1,5 +1,6 @@
 from flask import Flask, request, make_response
 from flask_cors import CORS, cross_origin
+from upreal-backend.tables.LikedProperties import LikedProperties
 from model_data import get_model_response
 from model_data import get_model_data
 from logged_in import logged_in
@@ -287,7 +288,7 @@ def verifyLogin():
 
 
 @app.route("/login", methods=["POST"])
-@cross_origin(supports_credentials=True)
+@cross_origin(supports_credentials=True, send_wildcard=True)
 def login():
 
     form_data = request.form
@@ -318,6 +319,7 @@ def login():
     if db_pass == inp_pass_hash:
         resp = make_response(
             {"success": True, "initals": user.firstname[0] + user.lastname[0]}, "fullName", f"{user.firstname} {user.lastname}")
+        
         login_token = user.token
 
         resp.set_cookie("login_token", login_token, 31 * 24 *
@@ -807,10 +809,37 @@ def delete_profile():
     return {"error": "No Matching Profiles Found"}
 
 
+@app.route("/setLike", methods=["GET"])
+@cross_origin(supports_credentials=True)
+def setLike():
+    token = logged_in(request.cookies)
+
+    if not token:
+        return {"error": "Not Authorized"}
+
+    user = User.query.filter_by(token=token).first()
+
+    if not user:
+        return {"error": "Invalid Token"}
+
+    prop_id = request.args.get("propId")
+
+    if not prop_id:
+        return {"error": "Invalid Request"}
+    
+    property = LikedProperties(user_id=user.id, prop_id=prop_id)
+
+    db.session.add(property)
+    db.session.commit()
+
+    return {"success": True, "id": property.id}
+
+    
+
 @app.route("/")
 @cross_origin()
 def index():
-    # db.drop_all()
-    # db.create_all()
+    db.drop_all()
+    db.create_all()
 
     return "Server Home"
