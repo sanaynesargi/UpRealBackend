@@ -835,6 +835,13 @@ def setLike():
     if not prop_id or not imageUrl or not beds or not baths or not title or not formattedPrice or not type or not apiInfo or not city:
         return {"error": "Invalid Request"}
 
+    existing_prop = LikedProperties.query.filter_by(
+        title=title).first() is not None
+
+    if existing_prop:
+        db.session.remove(existing_prop)
+        return {"success": True}
+
     property = LikedProperties(user_id=user.id, prop_id=prop_id, imageUrl=imageUrl,
                                beds=beds, baths=baths, title=title, type=type, apiInfo=apiInfo, city=city, formattedPrice=formattedPrice)
 
