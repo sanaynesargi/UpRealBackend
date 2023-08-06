@@ -317,7 +317,7 @@ def login():
 
     if db_pass == inp_pass_hash:
         resp = make_response(
-            {"success": True, "initals": user.firstname[0] + user.lastname[0]})
+            {"success": True, "initals": user.firstname[0] + user.lastname[0]}, "fullName", f"{user.firstname} {user.lastname}")
         login_token = user.token
 
         resp.set_cookie("login_token", login_token, 31 * 24 *
