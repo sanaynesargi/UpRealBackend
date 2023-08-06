@@ -334,7 +334,7 @@ def login():
 
 
 @app.route("/setProfile", methods=["POST"])
-@cross_origin()
+@cross_origin(supports_credentials=True)
 def set_profile():
     token = logged_in(request.cookies)
 
@@ -436,7 +436,7 @@ def set_profile():
 
 
 @app.route("/getProfileList", methods=["GET"])
-@cross_origin()
+@cross_origin(supports_credentials=True)
 def get_profile_list():
     token = logged_in(request.cookies)
 
@@ -581,7 +581,7 @@ def get_profile_list():
 
 
 @app.route("/getProfileNames", methods=["GET"])
-@cross_origin()
+@cross_origin(supports_credentials=True)
 def get_profile_names():
     token = logged_in(request.cookies)
 
@@ -619,7 +619,7 @@ def get_profile_names():
 
 
 @app.route("/getProfile", methods=["GET"])
-@cross_origin()
+@cross_origin(supports_credentials=True)
 def get_profile():
     token = logged_in(request.cookies)
 
@@ -760,7 +760,7 @@ def get_profile():
 
 
 @app.route("/deleteProfile", methods=["GET"])
-@cross_origin()
+@cross_origin(supports_credentials=True)
 def delete_profile():
     token = logged_in(request.cookies)
 
