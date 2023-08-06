@@ -580,6 +580,44 @@ def get_profile_list():
     return {"profiles": json_data}
 
 
+@app.route("/getProfileNames", methods=["GET"])
+@cross_origin()
+def get_profile_list():
+    token = logged_in(request.cookies)
+
+    if not token:
+        return {"error": "Not Authorized"}
+
+    user = User.query.filter_by(token=token).first()
+
+    if not user:
+        return {"error": "Invalid Token"}
+
+    if user.profile_ids == "":
+        return {"error": "No Profiles Found"}
+
+    split_profiles = user.profile_ids.split("|")
+
+    json_data = []
+
+    for type, id in split_profiles:
+        if type == "R":
+            profile = RentProfile.query.filter_by(id=id).first()
+
+            if profile.deleted:
+                continue
+
+        elif type == "F":
+            profile = FixFlipProfile.query.filter_by(id=id).first()
+
+            if profile.deleted:
+                continue
+
+        json_data.append(profile.name)
+
+    return {"profileNames": json_data}
+
+
 @app.route("/getProfile", methods=["GET"])
 @cross_origin()
 def get_profile():
