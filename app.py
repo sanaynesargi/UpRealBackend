@@ -355,7 +355,7 @@ def set_profile():
 
     if form["profile_type"] == "Rental":
         name = request.form.get("name")
-        location = request.form.get("location")
+        metro_area = request.form.get("location")
         risk = request.form.get("risk")
         budget_high = request.form.get("budgetHigh")
         budget_low = request.form.get("budgetLow")
@@ -370,10 +370,10 @@ def set_profile():
         hold_high = request.form.get("holdHigh")
         hold_low = request.form.get("holdLow")
 
-        if not hold_high or not hold_low or not name or not location or not risk or not budget_high or not budget_low or not appreciation_high or not appreciation_low or not cashflow_high or not cashflow_low or not coc_high or not coc_low or not main_high or not main_low:
+        if not hold_high or not hold_low or not name or not metro_area or not risk or not budget_high or not budget_low or not appreciation_high or not appreciation_low or not cashflow_high or not cashflow_low or not coc_high or not coc_low or not main_high or not main_low:
             return {"error": "Invalid Request"}
 
-        profile = RentProfile(name=name, location=location, risk=risk, budget_high=budget_high, budget_low=budget_low, appreciation_high=appreciation_high,
+        profile = RentProfile(name=name, location=metro_area, risk=risk, budget_high=budget_high, budget_low=budget_low, appreciation_high=appreciation_high,
                               appreciation_low=appreciation_low, cashflow_high=cashflow_high, cashflow_low=cashflow_low, coc_high=coc_high, coc_low=coc_low,
                               main_high=main_high, main_low=main_low, hold_low=hold_low, hold_high=hold_high)
         db.session.add(profile)
@@ -397,7 +397,7 @@ def set_profile():
 
     elif form["profile_type"] == "Fix and Flip":
         name = request.form.get("name")
-        location = request.form.get("location")
+        metro_area = request.form.get("location")
         risk = request.form.get("risk")
         budget_high = request.form.get("budgetHigh")
         budget_low = request.form.get("budgetLow")
@@ -408,10 +408,10 @@ def set_profile():
         coc_high = request.form.get("cocHigh")
         coc_low = request.form.get("cocLow")
 
-        if not name or not location or not risk or not budget_high or not budget_low or not after_repair_high or not after_repair_low or not repair_cost_high or not repair_cost_low or not coc_high or not coc_low:
+        if not name or not metro_area or not risk or not budget_high or not budget_low or not after_repair_high or not after_repair_low or not repair_cost_high or not repair_cost_low or not coc_high or not coc_low:
             return {"error": "Invalid Request"}
 
-        profile = FixFlipProfile(name=name, location=location, risk=risk,
+        profile = FixFlipProfile(name=name, location=metro_area, risk=risk,
                                  budget_high=budget_high, budget_low=budget_low, after_repair_high=after_repair_high, after_repair_low=after_repair_low, repair_cost_high=repair_cost_high, repair_cost_low=repair_cost_low, coc_high=coc_high, coc_low=coc_low)
         db.session.add(profile)
         db.session.commit()
