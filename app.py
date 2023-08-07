@@ -544,7 +544,7 @@ def get_profile_list():
             entry = {
                 "profile_type": {
                     "title": "Profile Type",
-                    "value": "Rental"
+                    "value": "Fix and Flip"
                 },
                 "profile_name": {
                     "title": "Profile Name",
