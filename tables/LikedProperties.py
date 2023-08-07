@@ -5,6 +5,7 @@ from sqlalchemy.sql import func
 class LikedPropertiesv2(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     prop_id = db.Column(db.String(100), nullable=False)
+    profile_name = db.Column(db.String(200), nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
     imageUrl = db.Column(db.String(100), nullable=False)
     beds = db.Column(db.Integer, nullable=False)

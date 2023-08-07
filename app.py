@@ -835,6 +835,7 @@ def setLike():
         return {"error": "Invalid Token"}
 
     prop_id = request.form.get("propId")
+    profile_name = request.form.get("profileName")
     imageUrl = request.form.get("imageUrl")
     beds = request.form.get("beds")
     baths = request.form.get("baths")
@@ -844,11 +845,11 @@ def setLike():
     apiInfo = request.form.get("apiInfo")
     city = request.form.get("city")
 
-    if not prop_id or not imageUrl or not beds or not baths or not title or not formattedPrice or not type or not apiInfo or not city:
+    if not profile_name or not prop_id or not imageUrl or not beds or not baths or not title or not formattedPrice or not type or not apiInfo or not city:
         return {"error": "Invalid Request"}
 
     existing_prop = LikedProperties.query.filter_by(
-        title=title).first()
+        title=title, profile_name=profile_name).first()
 
     if existing_prop is not None:
         db.session.delete(existing_prop)
@@ -857,7 +858,7 @@ def setLike():
         return {"success": True}
 
     property = LikedProperties(user_id=user.id, prop_id=prop_id, imageUrl=imageUrl,
-                               beds=beds, baths=baths, title=title, type=type, apiInfo=apiInfo, city=city, formattedPrice=formattedPrice)
+                               beds=beds, baths=baths, title=title, type=type, apiInfo=apiInfo, city=city, formattedPrice=formattedPrice, profile_name=profile_name)
 
     db.session.add(property)
     db.session.commit()
@@ -878,7 +879,8 @@ def getLikes():
     if not user:
         return {"error": "Invalid Token"}
 
-    props = LikedProperties.query.filter_by(user_id=user.id).all()
+    props = LikedProperties.query.filter_by(
+        user_id=user.id).all()
 
     prop_info = []
 
@@ -893,6 +895,7 @@ def getLikes():
             "apiInfo":  prop.apiInfo,
             "city": prop.city,
             "propId": prop.prop_id,
+            "profile": prop.profile_name,
         })
 
     return {"props": prop_info}
