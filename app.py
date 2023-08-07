@@ -428,7 +428,6 @@ def set_profile():
         db.session.add(profile)
         db.session.commit()
 
-        user.profile_ids = ""
         db.session.add(user)
         db.session.commit()
 
@@ -589,6 +588,7 @@ def get_profile_list():
                     "time_unit": "Annual",
                 },
             }
+
         json_data.append(entry)
 
     return {"profiles": json_data}
