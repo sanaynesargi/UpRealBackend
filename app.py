@@ -15,7 +15,7 @@ import os
 import json
 from datetime import date
 from dateutil.relativedelta import relativedelta
-
+from profile_rank import make_prop_request, profile_fit_rank_test
 
 app = Flask(__name__)
 cors = CORS(app, origins=["https://seashell-app-dxi4j.ondigitalocean.app"])
@@ -899,6 +899,87 @@ def getLikes():
         })
 
     return {"props": prop_info}
+
+
+@app.route("/getPropertiesByProfile", methods=["GET"])
+@cross_origin(supports_credentials=True)
+def get_properties_by_profile():
+    token = logged_in(request.cookies)
+
+    if not token:
+        return {"error": "Not Authorized"}
+
+    user = User.query.filter_by(token=token).first()
+
+    if not user:
+        return {"error": "Invalid Token"}
+
+    name = request.args.get("name")
+
+    user_profiles = User.profile_ids
+
+    if len(user_profiles) == 0:
+        return {"error": "No Profiles Found"}
+
+    split_profiles = user_profiles.split("|")
+
+    for type, id in split_profiles:
+
+        if type == "R":
+            profile = RentProfile.query.filter_by(id=int(id)).first()
+
+            if not profile:
+                continue
+
+            if profile.name == name:
+                results = make_prop_request()
+                sorted_results = {}
+                return_results = {}
+
+                for prop_id, prop in results.items():
+                    score = profile_fit_rank_test(prop)
+                    sorted_results[prop_id] = score
+
+                sorted_result_scores = dict(
+                    sorted(sorted_results.items(), key=lambda x: x[1], reverse=True))
+
+                for prop_id, score in sorted_result_scores.items():
+
+                    prop_data = results[prop_id]
+                    prop_data["Fit Score"] = score
+
+                    return_results[prop_id] = prop_data
+
+                return return_results
+
+        elif type == "F":
+            profile = FixFlipProfile.query.filter_by(id=int(id)).first()
+
+            if not profile:
+                continue
+
+            if profile.name == name:
+                results = make_prop_request()
+                sorted_results = {}
+                return_results = {}
+
+                for prop_id, prop in results.items():
+                    score = profile_fit_rank_test(prop)
+                    sorted_results[prop_id] = score
+
+                sorted_result_scores = dict(
+                    sorted(sorted_results.items(), key=lambda x: x[1], reverse=True))
+
+                for prop_id, score in sorted_result_scores.items():
+
+                    prop_data = results[prop_id]
+                    prop_data["Fit Score"] = score
+
+                    return_results[prop_id] = prop_data
+
+                return return_results
+
+    return {"error": "No Profiles Found"}
 
 
 @app.route("/")
