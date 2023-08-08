@@ -934,7 +934,7 @@ def get_properties_by_profile():
             if profile.name == name:
                 results = make_prop_request()
                 sorted_results = {}
-                return_results = {}
+                return_results = []
 
                 for prop_id, prop in results.items():
                     score = profile_fit_rank_test(prop)
@@ -948,7 +948,7 @@ def get_properties_by_profile():
                     prop_data = results[prop_id]
                     prop_data["Fit Score"] = score
 
-                    return_results[prop_id] = prop_data
+                    return_results.append({prop_id: prop_data})
 
                 return return_results
 
@@ -961,7 +961,7 @@ def get_properties_by_profile():
             if profile.name == name:
                 results = make_prop_request()
                 sorted_results = {}
-                return_results = {}
+                return_results = []
 
                 for prop_id, prop in results.items():
                     score = profile_fit_rank_test(prop)
@@ -975,7 +975,7 @@ def get_properties_by_profile():
                     prop_data = results[prop_id]
                     prop_data["Fit Score"] = score
 
-                    return_results[prop_id] = prop_data
+                    return_results.append({prop_id: prop_data})
 
                 return return_results
 
