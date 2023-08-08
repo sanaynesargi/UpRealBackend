@@ -916,7 +916,7 @@ def get_properties_by_profile():
 
     name = request.args.get("name")
 
-    user_profiles = User.profile_ids
+    user_profiles = user.profile_ids
 
     if len(user_profiles) == 0:
         return {"error": "No Profiles Found"}
