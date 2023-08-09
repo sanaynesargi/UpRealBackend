@@ -116,7 +116,6 @@ def get_property_data_realtor():
         listing_data[property_id]["photo"] = None
         listing_data[property_id]["virtual_tours"] = []
         listing_data[property_id]["mls_listing"] = result["href"]
-        listing_data[property_id]["Fit Score"] = -1
 
         if not advertising_info:
             continue
