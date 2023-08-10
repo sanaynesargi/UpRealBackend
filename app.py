@@ -374,9 +374,31 @@ def set_profile():
             return {"error": "Invalid Request"}
 
         existing_profile = RentProfile.query.filter_by(
-            name=name).first() is not None
+            name=name).first()
 
-        if existing_profile:
+        if existing_profile is not None:
+            if form.get("update"):
+                existing_profile.name = name
+                existing_profile.location = metro_area
+                existing_profile.risk = risk
+                existing_profile.budget_high = budget_high
+                existing_profile.budget_low = budget_low
+                existing_profile.appreciation_high = appreciation_high
+                existing_profile.appreciation_low = appreciation_low
+                existing_profile.cashflow_high = cashflow_high
+                existing_profile.cashflow_low = cashflow_low
+                existing_profile.coc_high = coc_high
+                existing_profile.coc_low = coc_low
+                existing_profile.main_high = main_high
+                existing_profile.main_low = main_low
+                existing_profile.hold_high = hold_high
+                existing_profile.hold_low = hold_low
+
+                db.session.add(existing_profile)
+                db.session.commit()
+
+                return {"success": True, "message": "Profile Updated"}
+
             return {"error": "Name Exists"}
 
         profile = RentProfile(name=name, location=metro_area, risk=risk, budget_high=budget_high, budget_low=budget_low, appreciation_high=appreciation_high,
@@ -418,9 +440,26 @@ def set_profile():
             return {"error": "Invalid Request"}
 
         existing_profile = FixFlipProfile.query.filter_by(
-            name=name).first() is not None
+            name=name).first()
 
-        if existing_profile:
+        if existing_profile is not None:
+            if form.get("update"):
+                existing_profile.name = name
+                existing_profile.location = metro_area
+                existing_profile.risk = risk
+                existing_profile.budget_high = budget_high
+                existing_profile.budget_low = budget_low
+                existing_profile.coc_high = coc_high
+                existing_profile.coc_low = coc_low
+                existing_profile.after_repair_high = after_repair_high
+                existing_profile.after_repair_low = after_repair_low
+                existing_profile.repair_cost_high = repair_cost_high
+                existing_profile.repair_cost_low = repair_cost_low
+
+                db.session.add(existing_profile)
+                db.session.commit()
+
+                return {"success": True, "message": "Profile Updated"}
             return {"error": "Name Exists"}
 
         profile = FixFlipProfile(name=name, location=metro_area, risk=risk,
